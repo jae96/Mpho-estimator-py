@@ -1,9 +1,10 @@
+
 ##Challenge_1_2_3
 
 import math
 
 
-def covid19ImpactEsimator(data):
+def esimator(data):
 
     reportedCases = data["reportedCases"]
 
