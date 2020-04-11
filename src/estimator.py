@@ -1,4 +1,3 @@
-
 ##Challenge_1_2_3
 
 import math
@@ -37,7 +36,7 @@ def esimator(data):
         "severeCasesByRequestedTime"]
 
     impact["casesForICUByRequestedTime"] = (((reportedCases*10)*(2**factor))*0.05)
-    severeImpact["casesForICUByRequestedTime"] = (((reportedCases * 50)*(2 ** factor))*0.05)
+    severeImpact["casesForICUByRequestedTime"] = (((reportedCases*50)*(2**factor))*0.05)
 
     impact["casesForVentilatorsByRequestedTime"] = (((reportedCases*10)*(2**factor))*0.02)
     severeImpact["casesForVentilatorsByRequestedTime"] = (((reportedCases*50)*(2**factor))*0.02)
@@ -49,4 +48,17 @@ def esimator(data):
     return estimate
 
 
+data = {"region": {
+    "name": "Africa",
+    "avgAge": 19.7,
+    "avgDailyIncomeInUSD": 4,
+    "avgDailyIncomePopulation": 0.73
+}, "periodType": "days",
+    "timeToElapse": 38,
+    "reportedCases": 2747,
+    "population": 92931687,
+    "totalHospitalBeds": 678874}
+
+
+print(esimator(data))
 
