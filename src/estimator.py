@@ -1,14 +1,13 @@
-##Challenge_1_2_3
-
 import math
 
 
-def esimator(data):
+def estimator(data):
 
+    # Challenge 1
     reportedCases = data["reportedCases"]
 
-    impact = {"currentlyInfected": reportedCases*10}
-    severeImpact = {"currentlyInfected": reportedCases*50}
+    impact = {"currentlyInfected": float(reportedCases * 10)}
+    severeImpact = {"currentlyInfected": float(reportedCases * 50)}
 
     # Calculate infectionsByRequestedTime by finding the find the period type and timeToElapse and calculate factor
     timeToElapse = data["timeToElapse"]
@@ -17,48 +16,52 @@ def esimator(data):
         finalTimeToElapse = timeToElapse
     if periodType == "weeks":
         finalTimeToElapse = timeToElapse * 7  # There are seven days in a week
-    if periodType == "weeks":
+    if periodType == "months":
         finalTimeToElapse = timeToElapse * 30  # Assuming 30 days in a month
 
-    factor = math.floor(finalTimeToElapse/3)
+    factor = math.floor(finalTimeToElapse / 3)
 
-    impact["infectionsByRequestedTime"] = (reportedCases*10)*(2**factor)
-    severeImpact["infectionsByRequestedTime"] = (reportedCases * 50) * (2 ** factor)
+    impact["infectionsByRequestedTime"] = float(impact["currentlyInfected"] * (2 ** factor))
+    severeImpact["infectionsByRequestedTime"] = float(severeImpact["currentlyInfected"] * (2 ** factor))
 
-    impact["severeCasesByRequestedTime"] = (((reportedCases*10)*(2**factor))*0.15)
-    severeImpact["severeCasesByRequestedTime"] = (((reportedCases * 50) * (2 ** factor)) * 0.15)
+    # Challenge 2
+    impact["severeCasesByRequestedTime"] = float(impact["infectionsByRequestedTime"] * 0.15)
+    severeImpact["severeCasesByRequestedTime"] = float(severeImpact["infectionsByRequestedTime"] * 0.15)
 
     totalHospitalBeds = data["totalHospitalBeds"]
 
-    impact["hospitalBedsByRequestedTime"] = math.ceil((0.35*totalHospitalBeds)) - impact[
+    hospitalBedsByRequestedTime = (0.35 * totalHospitalBeds) - impact[
         "severeCasesByRequestedTime"]
-    severeImpact["hospitalBedsByRequestedTime"] = math.ceil((0.35*totalHospitalBeds)) - severeImpact[
+    if hospitalBedsByRequestedTime >= 0:
+        impact["hospitalBedsByRequestedTime"] = float(math.floor(hospitalBedsByRequestedTime))
+    else:
+        impact["hospitalBedsByRequestedTime"] = float(math.ceil(hospitalBedsByRequestedTime))
+
+    hospitalBedsByRequestedTime = (0.35 * totalHospitalBeds) - severeImpact[
         "severeCasesByRequestedTime"]
+    if hospitalBedsByRequestedTime >= 0:
+        severeImpact["hospitalBedsByRequestedTime"] = float(math.floor(hospitalBedsByRequestedTime))
+    else:
+        severeImpact["hospitalBedsByRequestedTime"] = float(math.ceil(hospitalBedsByRequestedTime))
 
-    impact["casesForICUByRequestedTime"] = (((reportedCases*10)*(2**factor))*0.05)
-    severeImpact["casesForICUByRequestedTime"] = (((reportedCases*50)*(2**factor))*0.05)
+    # Challenge 3
+    impact["casesForICUByRequestedTime"] = float(math.floor(impact["infectionsByRequestedTime"] * 0.05))
+    severeImpact["casesForICUByRequestedTime"] = float(math.floor(severeImpact["infectionsByRequestedTime"] * 0.05))
 
-    impact["casesForVentilatorsByRequestedTime"] = (((reportedCases*10)*(2**factor))*0.02)
-    severeImpact["casesForVentilatorsByRequestedTime"] = (((reportedCases*50)*(2**factor))*0.02)
+    impact["casesForVentilatorsByRequestedTime"] = float(math.floor(impact["infectionsByRequestedTime"] * 0.02))
+    severeImpact["casesForVentilatorsByRequestedTime"] = float(math.floor(severeImpact["infectionsByRequestedTime"] * 0.02))
 
-    impact["dollarsInFlight"] = round(((reportedCases*10)*(2**factor)*0.73*4*38), 2)
-    severeImpact["dollarsInFlight"] = ((reportedCases*50)*(2**factor)*0.73*4*38)
-
-    estimate = {"impact": impact, "severeImpact": severeImpact}
-    return estimate
-
-
-data = {"region": {
-    "name": "Africa",
-    "avgAge": 19.7,
-    "avgDailyIncomeInUSD": 4,
-    "avgDailyIncomePopulation": 0.73
-}, "periodType": "days",
-    "timeToElapse": 38,
-    "reportedCases": 2747,
-    "population": 92931687,
-    "totalHospitalBeds": 678874}
+    region = data["region"]  # Get the region
+    avgDailyIncomeInUSD = region["avgDailyIncomeInUSD"]
+    avgDailyIncomePopulation = region["avgDailyIncomePopulation"]
 
 
-print(esimator(data))
+    impact["dollarsInFlight"] = float(math.floor((impact["infectionsByRequestedTime"] *
+                                                  avgDailyIncomePopulation * avgDailyIncomeInUSD) / finalTimeToElapse))
+    severeImpact["dollarsInFlight"] = float(math.floor((severeImpact["infectionsByRequestedTime"] *
+                                                       avgDailyIncomePopulation * avgDailyIncomeInUSD) / finalTimeToElapse))
+
+    data = {"impact": impact, "severeImpact": severeImpact}
+
+    return data
 
